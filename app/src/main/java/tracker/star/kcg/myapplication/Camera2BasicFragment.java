@@ -239,18 +239,22 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
         public void onImageAvailable(ImageReader reader)
         {
             Log.d("elazarkin", "OnImageAvailableListener");
-            Image image = reader.acquireNextImage();
+            Image image = reader.acquireLatestImage();
 
-            Image.Plane Y = image.getPlanes()[0];
-
-            if(onFrameCallback != null)
+            if(image != null)
             {
-                ByteBuffer buffer = Y.getBuffer();
-//                byte[] copy = new byte[];
-//                onFrameCallback.onFrame(Y.getBuffer().get, image.getWidth(), image.getHeight());
-            }
+                Image.Plane Y = image.getPlanes()[0];
 
-            image.close();
+                if (onFrameCallback != null)
+                {
+                    int    size = image.getWidth() * image.getHeight();
+                    byte[] copy = new byte[size];
+                    Y.getBuffer().get(copy, 0, size);
+                    onFrameCallback.onFrame(copy, image.getWidth(), image.getHeight());
+                }
+
+                image.close();
+            }
         }
 
     };
