@@ -238,7 +238,6 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
         @Override
         public void onImageAvailable(ImageReader reader)
         {
-            Log.d("elazarkin", "OnImageAvailableListener");
             Image image = reader.acquireLatestImage();
 
             if(image != null)
@@ -256,7 +255,6 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
                 image.close();
             }
         }
-
     };
 
     /**
@@ -519,7 +517,7 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
 
                 // For still image captures, we use the largest available size.
                 Size largest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.YUV_420_888)), new CompareSizesByArea());
-                mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.YUV_420_888, 2);
+                mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.YUV_420_888, 10);
                 mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
 
                 // Find out if we need to swap dimension to get the preview size relative to sensor

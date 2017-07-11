@@ -1,6 +1,7 @@
 package tracker.star.kcg.myapplication;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,9 +13,11 @@ import java.nio.ByteBuffer;
 
 public class MainActivity extends Activity
 {
+    private byte                 textOut[]      = null;
+    private Camera2BasicFragment cameraFragment = null;
+    private Bitmap               workBitmap     = null;
+    private DebugView            debugView      = null;
 
-    private Camera2BasicFragment cameraFragment;
-    //private Camera2RawFragment cameraFragment = null;
     // Used to load the 'native-lib' library on application startup.
     static
     {
@@ -27,23 +30,43 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        debugView = findViewById(R.id.debug_view);
+
         if (null == savedInstanceState)
         {
             getFragmentManager().beginTransaction().replace(R.id.container, (cameraFragment=Camera2BasicFragment.newInstance())).commit();
+
+            textOut = new byte[65536];
+
             cameraFragment.setOnFrameCallback(new Camera2BasicFragment.FrameCallback()
             {
                 @Override
                 public void onFrame(byte[] frame, int w, int h)
                 {
+                    if(workBitmap == null || workBitmap.getWidth() != w || workBitmap.getHeight() != h)
+                    {
+                        if(workBitmap != null) workBitmap.recycle();
+
+                        workBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+
+                        findStarsJNI(frame, w, h, textOut, workBitmap);
+
+                        debugView.setBitmap(workBitmap);
+
+                        runOnUiThread(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                debugView.invalidate();
+                            }
+                        });
+                    }
                     Log.d("elazarkin", "onFrame " + w + "x" + h);
                 }
             });
         }
     }
 
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    public native String stringFromJNI();
+    public native void findStarsJNI(byte[] ybuffer, int w, int h, byte[] textOut, Bitmap debug);
 }

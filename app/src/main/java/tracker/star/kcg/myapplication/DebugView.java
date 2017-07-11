@@ -1,0 +1,37 @@
+package tracker.star.kcg.myapplication;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
+import android.view.View;
+
+/**
+ * Created by elazar on 11/07/17.
+ */
+
+public class DebugView extends View
+{
+    private Bitmap screen = null;
+
+    public DebugView(Context context, @Nullable AttributeSet attrs)
+    {
+        super(context, attrs);
+    }
+
+    public void setBitmap(Bitmap bit)
+    {
+        screen = bit;
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas)
+    {
+        if(screen != null)
+        {
+            canvas.drawBitmap(screen, null, new Rect(0, 0, canvas.getWidth(), canvas.getHeight()), null);
+        }
+    }
+}
