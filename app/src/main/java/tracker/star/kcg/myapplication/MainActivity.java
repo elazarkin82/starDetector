@@ -49,20 +49,16 @@ public class MainActivity extends Activity
 
                         workBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 
-                        findStarsJNI(frame, w, h, textOut, workBitmap);
-
                         debugView.setBitmap(workBitmap);
-
-                        runOnUiThread(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                debugView.invalidate();
-                            }
-                        });
                     }
-                    Log.d("elazarkin", "onFrame " + w + "x" + h);
+
+                    findStarsJNI(frame, w, h, textOut, workBitmap);
+
+                    runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run() {debugView.invalidate();}
+                    });
                 }
             });
         }

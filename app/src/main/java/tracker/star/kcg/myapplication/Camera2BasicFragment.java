@@ -235,10 +235,11 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
 
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener = new ImageReader.OnImageAvailableListener()
     {
+        private byte[] copy = null;
         @Override
         public void onImageAvailable(ImageReader reader)
         {
-            Image image = reader.acquireLatestImage();
+            Image image = reader.acquireNextImage();
 
             if(image != null)
             {
@@ -246,10 +247,15 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
 
                 if (onFrameCallback != null)
                 {
-                    int    size = image.getWidth() * image.getHeight();
-                    byte[] copy = new byte[size];
+                    int size = image.getWidth() * image.getHeight();
+
+                    if(copy == null) copy = new byte[size];
+
                     Y.getBuffer().get(copy, 0, size);
+
+                    long t0 = System.currentTimeMillis();
                     onFrameCallback.onFrame(copy, image.getWidth(), image.getHeight());
+                    Log.d("elazarkin", "time take " + (System.currentTimeMillis()-t0) + " ms");
                 }
 
                 image.close();

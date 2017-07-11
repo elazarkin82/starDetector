@@ -31,7 +31,14 @@ public class DebugView extends View
     {
         if(screen != null)
         {
-            canvas.drawBitmap(screen, null, new Rect(0, 0, canvas.getWidth(), canvas.getHeight()), null);
+            canvas.rotate(90,canvas.getWidth() / 2, canvas.getHeight()/ 2);
+            canvas.drawBitmap
+            (
+                screen,
+                new Rect(0, 0, screen.getWidth(), screen.getHeight()),
+                new Rect(0, 0, canvas.getWidth(), canvas.getHeight()),
+                null
+            );
         }
     }
 }
