@@ -411,6 +411,11 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
         }
     }
 
+    public Camera2BasicFragment()
+    {
+        super();
+    }
+
     public static Camera2BasicFragment newInstance()
     {
         return new Camera2BasicFragment();
@@ -522,8 +527,21 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
                 }
 
                 // For still image captures, we use the largest available size.
-                Size largest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.YUV_420_888)), new CompareSizesByArea());
-                mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.YUV_420_888, 10);
+//                Size largest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.YUV_420_888)), new CompareSizesByArea());
+
+                List<Size> sizes = Arrays.asList(map.getOutputSizes(ImageFormat.YUV_420_888));
+                Size largest = sizes.get(0);
+
+                for(Size s:sizes)
+                {
+                    if(s.getWidth() == 640)
+                    {
+                        largest = s;
+                        break;
+                    }
+                }
+
+                mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.YUV_420_888, 2);
                 mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
 
                 // Find out if we need to swap dimension to get the preview size relative to sensor
