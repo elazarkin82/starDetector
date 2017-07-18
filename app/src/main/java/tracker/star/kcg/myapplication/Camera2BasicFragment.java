@@ -21,6 +21,7 @@ package tracker.star.kcg.myapplication;
  */
 
 import android.hardware.camera2.CameraManager.AvailabilityCallback;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
@@ -487,7 +488,13 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
         }
         else
         {
-            FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+            String[] permissions = new String[]
+            {
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            };
+            FragmentCompat.requestPermissions(this, permissions, REQUEST_CAMERA_PERMISSION);
         }
     }
 
@@ -549,6 +556,9 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
             }
 
             if(workSize == null) workSize = sizes.get(0);
+
+            // TODO delete it
+            workSize = new Size(640, 480);
 
             mImageReader = ImageReader.newInstance(workSize.getWidth(), workSize.getHeight(), ImageFormat.YUV_420_888, 2);
             mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);

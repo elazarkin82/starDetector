@@ -32,9 +32,10 @@ public class DebugView extends View
     {
         if(screen != null)
         {
+            //canvas.drawBitmap(screen, null, new Rect(0, 0, canvas.getWidth(), canvas.getHeight()), null);
             canvas.drawBitmap
             (
-                rotateBitmap(screen, 90),
+                rotateBitmap(screen, 270),
                 null,
                 new Rect(0, 0, canvas.getWidth(), canvas.getHeight()),
                 null
