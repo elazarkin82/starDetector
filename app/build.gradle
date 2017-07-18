@@ -5,7 +5,8 @@ android {
     buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "tracker.star.kcg.myapplication"
-        minSdkVersion 21
+
+        minSdkVersion 22
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"

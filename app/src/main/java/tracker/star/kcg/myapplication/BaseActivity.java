@@ -2,7 +2,9 @@ package tracker.star.kcg.myapplication;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,11 +19,11 @@ import java.util.Properties;
 
 public class BaseActivity extends Activity
 {
-    private static final String PROPERTY_FOCUS_KEY = "focus";
-    private static final String PROPERTY_RADIUS_KEY = "radius";
-    private static final String PROPERTY_THRESHHOLD_KEY = "threshhold";
-    private static final String PROPERTY_PERCENT_KEY = "percent";
-    private static final String PROPERTY_RESOLUTION_KEY = "resolution";
+    protected static final String PROPERTY_FOCUS_KEY = "focus";
+    protected static final String PROPERTY_RADIUS_KEY = "radius";
+    protected static final String PROPERTY_THRESHHOLD_KEY = "threshhold";
+    protected static final String PROPERTY_PERCENT_KEY = "percent";
+    protected static final String PROPERTY_RESOLUTION_KEY = "resolution";
 
     private static File propertyFile = null;
     private static Properties properties = null;
@@ -32,7 +34,8 @@ public class BaseActivity extends Activity
         super.onCreate(savedInstanceState);
 
         if(properties == null) {
-            propertyFile = new File(getFilesDir(), "settings.xml");
+            //propertyFile = new File(getFilesDir(), "settings.xml");
+            propertyFile = new File(Environment.getExternalStorageDirectory(), "settings.xml");
             properties = new Properties();
 
             try {
@@ -56,6 +59,7 @@ public class BaseActivity extends Activity
         catch (IOException e)
         {
             e.printStackTrace();
+            Log.d("resolution", "error save prop!" + e.toString());
         }
     }
 }

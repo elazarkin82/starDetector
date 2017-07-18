@@ -21,11 +21,10 @@
         android:orientation="horizontal"
         android:weightSum="1">
         <TextView
-            android:id="@+id/textViewR"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:text="Radius"
+            android:text="Radius (percents of W)"
             android:gravity="center"
          />
         <EditText
@@ -33,7 +32,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:inputType="numberDecimal"
+            android:inputType="number"
             />
     </LinearLayout>
 
@@ -43,7 +42,6 @@
         android:orientation="horizontal"
         android:weightSum="1">
         <TextView
-            android:id="@+id/textViewT"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Threshold"
@@ -66,12 +64,11 @@
         android:orientation="horizontal"
         android:weightSum="1">
         <TextView
-            android:id="@+id/textViewP"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:gravity="center"
-            android:text="Percent"
+            android:text="Percent (Min dark pixels percent)"
             />
         <EditText
             android:id="@+id/textEditP"
@@ -88,7 +85,6 @@
         android:orientation="horizontal"
         android:weightSum="1">
         <TextView
-            android:id="@+id/textViewRes"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:text="Resolution"

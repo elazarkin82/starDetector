@@ -3,6 +3,7 @@ package tracker.star.kcg.myapplication;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -31,14 +32,20 @@ public class DebugView extends View
     {
         if(screen != null)
         {
-            canvas.rotate(90,canvas.getWidth() / 2, canvas.getHeight()/ 2);
             canvas.drawBitmap
             (
-                screen,
-                new Rect(0, 0, screen.getWidth(), screen.getHeight()),
+                rotateBitmap(screen, 90),
+                null,
                 new Rect(0, 0, canvas.getWidth(), canvas.getHeight()),
                 null
             );
         }
+    }
+
+    public static Bitmap rotateBitmap(Bitmap source, float angle)
+    {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 }
