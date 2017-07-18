@@ -1,20 +1,13 @@
 package tracker.star.kcg.myapplication;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.location.SettingInjectorService;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
 import android.view.View;
 import android.widget.Button;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.List;
 
 public class MainActivity extends BaseActivity
@@ -97,20 +90,42 @@ public class MainActivity extends BaseActivity
 
                         workBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 
-                        debugView.setBitmap(workBitmap);
                     }
 
-                    findStarsJNI(frame, w, h, textOut, workBitmap);
+                    int text_size = findStarsJNI(frame, w, h, textOut, workBitmap);
+
+                    Log.d("elazarkin", "onFrame");
+
+                    debugView.setBit(workBitmap);
+                    debugView.setStarsList(new String(textOut, 0, text_size));
 
                     runOnUiThread(new Runnable()
                     {
                         @Override
-                        public void run() {debugView.invalidate();}
+                        public void run()
+                        {
+                            debugView.invalidate();
+                        }
                     });
                 }
             });
         }
     }
 
-    public native void findStarsJNI(byte[] ybuffer, int w, int h, byte[] textOut, Bitmap debug);
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        setProperty
+        (
+            Float.parseFloat(getProperties().getProperty(PROPERTY_RADIUS_KEY, "0.8")),
+            Integer.parseInt(getProperties().getProperty(PROPERTY_PERCENT_KEY, "80")),
+            Integer.parseInt(getProperties().getProperty(PROPERTY_THRESHHOLD_KEY, "50"))
+        );
+    }
+
+    private native int findStarsJNI(byte[] ybuffer, int w, int h, byte[] textOut, Bitmap debug);
+
+    private native void setProperty(float rp, float percents, float threshhold);
 }

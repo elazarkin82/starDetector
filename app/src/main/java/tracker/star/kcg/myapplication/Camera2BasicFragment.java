@@ -557,9 +557,6 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
 
             if(workSize == null) workSize = sizes.get(0);
 
-            // TODO delete it
-            workSize = new Size(640, 480);
-
             mImageReader = ImageReader.newInstance(workSize.getWidth(), workSize.getHeight(), ImageFormat.YUV_420_888, 2);
             mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
 
@@ -595,6 +592,8 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
             int rotatedPreviewHeight = height;
             int maxPreviewWidth      = displaySize.x;
             int maxPreviewHeight     = displaySize.y;
+
+            swappedDimensions = false;
 
             if (swappedDimensions)
             {

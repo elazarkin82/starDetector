@@ -101,6 +101,8 @@ public class Settings extends BaseActivity {
                 Log.d("resolution", "" + getProperties().getProperty(PROPERTY_RESOLUTION_KEY));
 
                 saveProperties();
+
+                finish();
             }
         });
 

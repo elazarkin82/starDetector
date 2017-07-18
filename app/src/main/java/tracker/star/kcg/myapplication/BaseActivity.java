@@ -47,7 +47,7 @@ public class BaseActivity extends Activity
             try
             {
                 Set<String> names;
-                properties.loadFromXML(new FileInputStream(propertyFile));
+                properties.load(new FileInputStream(propertyFile));
                 names = properties.stringPropertyNames();
 
                 for(String name:names)
