@@ -24,11 +24,14 @@ import java.util.Set;
 
 public class BaseActivity extends Activity
 {
-    protected static final String PROPERTY_FOCUS_KEY      = "focus";
-    protected static final String PROPERTY_RADIUS_KEY     = "radius";
-    protected static final String PROPERTY_THRESHHOLD_KEY = "threshhold";
-    protected static final String PROPERTY_PERCENT_KEY    = "percent";
-    protected static final String PROPERTY_RESOLUTION_KEY = "resolution";
+    public static final String PROPERTY_FOCUS_KEY      = "focus";
+    public static final String PROPERTY_USE_EXPOSE_ISO = "expose_iso";
+    public static final String PROPERTY_RADIUS_KEY     = "radius";
+    public static final String PROPERTY_THRESHHOLD_KEY = "threshhold";
+    public static final String PROPERTY_PERCENT_KEY    = "percent";
+    public static final String PROPERTY_RESOLUTION_KEY = "resolution";
+    public static final String PROPERTY_ISO            = "iso";
+    public static final String PROPERTY_EXPOSE         = "expose";
 
     private static File       propertyFile = null;
     private static Properties properties   = null;

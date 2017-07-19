@@ -49,6 +49,12 @@ public class DebugView extends View
 
     public void setBit(Bitmap b)
     {
+        if(bit != null && (bit.getWidth() != b.getWidth() || bit.getHeight() != b.getWidth()))
+        {
+            bit.recycle();
+            bit = null;
+        }
+
         if(bit == null)
         {
             bit = b.copy(Bitmap.Config.ARGB_8888, true);
@@ -58,8 +64,6 @@ public class DebugView extends View
         {
             cbit.drawBitmap(b, 0, 0, null);
         }
-
-        Log.d("elazarkin", "DebugView setBit");
     }
 
     @Override

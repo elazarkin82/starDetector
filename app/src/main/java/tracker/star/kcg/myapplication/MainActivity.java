@@ -42,6 +42,8 @@ public class MainActivity extends BaseActivity
         {
             getFragmentManager().beginTransaction().replace(R.id.container, (cameraFragment=Camera2BasicFragment.newInstance())).commit();
 
+            cameraFragment.setParent(this);
+
             textOut = new byte[65536];
 
             cameraFragment.setOnPreviewSizeSet(new Camera2BasicFragment.OnPreviewSizeSet()

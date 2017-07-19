@@ -8,12 +8,61 @@
     tools:context="tracker.star.kcg.myapplication.Settings"
     android:layout_margin="50dp">
 
-    <RadioButton
+    <CheckBox
         android:id="@+id/buttonAF"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="AutoFocus"
         />
+
+    <CheckBox
+        android:id="@+id/switchExpose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="useExpose"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+        <TextView
+            android:id="@+id/IsoRangeTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            />
+        <EditText
+            android:id="@+id/IsoValue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:inputType="numberDecimal"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+        <TextView
+            android:id="@+id/ExposeRangeTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            />
+        <EditText
+            android:id="@+id/ExposeValue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:inputType="numberDecimal"
+            />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,7 +77,7 @@
             android:gravity="center"
          />
         <EditText
-            android:id="@+id/textEditR"
+            android:id="@+id/textEditRadius"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
@@ -49,11 +98,10 @@
             android:layout_weight="0.5"/>
             />
         <EditText
-            android:id="@+id/textEditT"
+            android:id="@+id/textEditThresh"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:gravity="center"
             android:inputType="numberDecimal"
             />
     </LinearLayout>
@@ -71,7 +119,7 @@
             android:text="Percent (Min dark pixels percent)"
             />
         <EditText
-            android:id="@+id/textEditP"
+            android:id="@+id/textEditPercent"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
@@ -105,8 +153,5 @@
         android:layout_height="wrap_content"
         android:text="Save"
         />
-
-
-
 
 </LinearLayout>
