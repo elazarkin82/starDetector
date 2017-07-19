@@ -19,11 +19,15 @@ import android.view.View;
 public class DebugView extends View
 {
     private Bitmap bit = null;
+    private Canvas cbit = null;
     private String starsList;
+    private Paint p;
 
     public DebugView(Context context)
     {
         super(context);
+
+        init();
 
         Log.d("elazarkin", "DebugViewConstructor");
     }
@@ -31,29 +35,41 @@ public class DebugView extends View
     public DebugView(Context context, @Nullable AttributeSet attrs)
     {
         super(context, attrs);
+        init();
         Log.d("elazarkin", "DebugViewConstructor");
     }
 
-    public void setBit(Bitmap bit)
+    private void init()
     {
-        this.bit = bit;
+        p = new Paint();
+        p.setStyle(Paint.Style.STROKE);
+        p.setColor(Color.RED);
+        p.setTextSize(64);
+    }
+
+    public void setBit(Bitmap b)
+    {
+        if(bit == null)
+        {
+            bit = b.copy(Bitmap.Config.ARGB_8888, true);
+            cbit = new Canvas(bit);
+        }
+        else
+        {
+            cbit.drawBitmap(b, 0, 0, null);
+        }
+
         Log.d("elazarkin", "DebugView setBit");
     }
 
     @Override
     protected void onDraw(Canvas c)
     {
-        Paint p = new Paint();
-        p.setStyle(Paint.Style.STROKE);
-        p.setColor(Color.RED);
-        p.setTextSize(64);
-
-        Log.d("elazarkin", "bit = " + bit + " txt=" + starsList);
-
         if(bit != null)
         {
+            boolean USE_ROTATE = true;
             int radius = bit.getWidth()/50;
-            Canvas cbit = new Canvas(bit);
+
             if(starsList != null)
             {
                 String starsPosition[] = starsList.split("\n");
@@ -67,36 +83,35 @@ public class DebugView extends View
                         int y = Integer.parseInt(xy[1]);
 
                         cbit.drawCircle(x-radius/4, y-radius/4, radius, p);
-
                     }
 
                 }
             }
             else cbit.drawText("No Result!", cbit.getWidth()/2 - 50, bit.getHeight()/2, p);
 
-            Bitmap rotated = rotateBitmap(bit, 270);
+            if(USE_ROTATE)
+            {
+                Bitmap rotated = rotateBitmap(bit, 270);
+                c.drawBitmap
+                (
+                        rotated,
+                        new Rect(0, 0, rotated.getWidth(), rotated.getHeight()),
+                        new Rect(0, 0, getWidth(), getHeight()),
+                        null
+                );
 
-            c.drawBitmap
-                    (
-                            rotated,
-                            null,
-                            new Rect(0, 0, getWidth() - 1, getHeight() - 1),
-                            //new Rect(0, 0, bit.getWidth(), bit.getHeight()),
-                            //new Rect(getWidth()-1, getHeight()-1, 0, 0),
-                            null
-                    );
-
-            rotated.recycle();
-
-//            c.drawBitmap
-//            (
-//                    bit,
-//                    null,
-//                    new Rect(0, 0, getWidth() - 1, getHeight() - 1),
-//                    //new Rect(0, 0, bit.getWidth(), bit.getHeight()),
-//                    //new Rect(getWidth()-1, getHeight()-1, 0, 0),
-//                    null
-//            );
+                rotated.recycle();
+            }
+            else
+            {
+                c.drawBitmap
+                (
+                        bit,
+                        new Rect(0, 0, bit.getWidth(), bit.getHeight()),
+                        new Rect(0, 0, getWidth() - 1, getHeight() - 1),
+                        null
+                );
+            }
         }
         else
         {

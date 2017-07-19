@@ -20,13 +20,6 @@ package tracker.star.kcg.myapplication;
  * limitations under the License.
  */
 
-import android.hardware.camera2.CameraManager.AvailabilityCallback;
-import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v13.app.FragmentCompat;
-import android.support.v4.content.ContextCompat;
-import android.view.Surface;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -47,7 +40,6 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
@@ -57,16 +49,19 @@ import android.media.ImageReader;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.support.annotation.NonNull;
+import android.support.v13.app.FragmentCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -251,7 +246,7 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
         @Override
         public void onImageAvailable(ImageReader reader)
         {
-            Image image = reader.acquireNextImage();
+            Image image = reader.acquireLatestImage();
 
             if(image != null)
             {
@@ -363,66 +358,6 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
         }
     }
 
-    /**
-     * Given {@code choices} of {@code Size}s supported by a camera, choose the smallest one that
-     * is at least as large as the respective texture view size, and that is at most as large as the
-     * respective max size, and whose aspect ratio matches with the specified value. If such size
-     * doesn't exist, choose the largest one that is at most as large as the respective max size,
-     * and whose aspect ratio matches with the specified value.
-     *
-     * @param choices           The list of sizes that the camera supports for the intended output
-     *                          class
-     * @param textureViewWidth  The width of the texture view relative to sensor coordinate
-     * @param textureViewHeight The height of the texture view relative to sensor coordinate
-     * @param maxWidth          The maximum width that can be chosen
-     * @param maxHeight         The maximum height that can be chosen
-     * @param aspectRatio       The aspect ratio
-     * @return The optimal {@code Size}, or an arbitrary one if none were big enough
-     */
-    private static Size chooseOptimalSize(Size[] choices, int textureViewWidth,
-                                          int textureViewHeight, int maxWidth, int maxHeight, Size aspectRatio)
-    {
-
-        // Collect the supported resolutions that are at least as big as the preview Surface
-        List<Size> bigEnough = new ArrayList<>();
-        // Collect the supported resolutions that are smaller than the preview Surface
-        List<Size> notBigEnough = new ArrayList<>();
-        int        w            = aspectRatio.getWidth();
-        int        h            = aspectRatio.getHeight();
-        for (Size option : choices)
-        {
-            if (option.getWidth() <= maxWidth && option.getHeight() <= maxHeight &&
-                    option.getHeight() == option.getWidth() * h / w)
-            {
-                if (option.getWidth() >= textureViewWidth &&
-                        option.getHeight() >= textureViewHeight)
-                {
-                    bigEnough.add(option);
-                }
-                else
-                {
-                    notBigEnough.add(option);
-                }
-            }
-        }
-
-        // Pick the smallest of those big enough. If there is no one big enough, pick the
-        // largest of those not big enough.
-        if (bigEnough.size() > 0)
-        {
-            return Collections.min(bigEnough, new CompareSizesByArea());
-        }
-        else if (notBigEnough.size() > 0)
-        {
-            return Collections.max(notBigEnough, new CompareSizesByArea());
-        }
-        else
-        {
-            Log.e(TAG, "Couldn't find any suitable preview size");
-            return choices[0];
-        }
-    }
-
     public Camera2BasicFragment()
     {
         super();
@@ -458,10 +393,6 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
         super.onResume();
         startBackgroundThread();
 
-        // When the screen is turned off and turned back on, the SurfaceTexture is already
-        // available, and "onSurfaceTextureAvailable" will not be called. In that case, we can open
-        // a camera and start preview from here (otherwise, we wait until the surface is ready in
-        // the SurfaceTextureListener).
         if (mTextureView.isAvailable())
         {
             openCamera(mTextureView.getWidth(), mTextureView.getHeight());
@@ -557,7 +488,7 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
 
             if(workSize == null) workSize = sizes.get(0);
 
-            mImageReader = ImageReader.newInstance(workSize.getWidth(), workSize.getHeight(), ImageFormat.YUV_420_888, 2);
+            mImageReader = ImageReader.newInstance(workSize.getWidth(), workSize.getHeight(), ImageFormat.YUV_420_888, 10);
             mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
 
             // Find out if we need to swap dimension to get the preview size relative to sensor
@@ -616,9 +547,10 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
             // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
             // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
             // garbage capture data.
-            mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class),
-                    rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
-                    maxPreviewHeight, workSize);
+//            mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class),
+//                    rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
+//                    maxPreviewHeight, workSize);
+            mPreviewSize = workSize;
 
             // We fit the aspect ratio of TextureView to the size of preview we picked.
             int orientation = getResources().getConfiguration().orientation;

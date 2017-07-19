@@ -38,6 +38,7 @@ typedef struct
     float percent_of_w_for_r;//percent of width for search radius
     int percnts;//percents of dark pixels
     int t;//treshhold
+    int *buffer;
 }AlgorithmProps;
 
 AlgorithmProps props = {0.8f, 80, 50};
@@ -48,9 +49,47 @@ Java_tracker_star_kcg_myapplication_MainActivity_setProperty(JNIEnv *env, jobjec
     props.percent_of_w_for_r = rp;
     props.percnts = percents;
     props.t = threshhold;
+
+    if(!props.buffer) free(props.buffer);
+
+    props.buffer = (int *)malloc(sizeof(int)*1024*1024*4 + 128);
 }
 
-bool checkStar(uchar *ybuffer, int xc, int yc, int w, AlgorithmProps *props, Point *p);
+inline int int_compire(const void * a, const void * b)
+{
+    return ( *(int*)a - *(int*)b );
+}
+
+inline bool checkStar(uchar *ybuffer, int xc, int yc, int w, AlgorithmProps *props, Point *p)
+{
+    int radius = (int)(w*props->percent_of_w_for_r/100.0f + 0.5f);
+    int max = 0;
+    int index = 0;
+    bool ret = false;
+
+    for(int y = yc - radius; y < yc + radius; ++y)
+    {
+        for (int x = xc - radius; x < xc + radius; ++x)
+        {
+            props->buffer[index] = ybuffer[y*w + x];
+
+            if(props->buffer[index] > max)
+            {
+                max = props->buffer[index];
+                p->x = x;
+                p->y = y;
+            }
+            index++;
+        }
+    }
+
+    qsort(props->buffer, index, sizeof(int), int_compire);
+//
+    if(props->buffer[index-1] - props->buffer[index*props->percnts/100-1] > props->t) ret = true;
+
+//    free(buffer);
+    return ret;
+}
 
 JNIEXPORT void JNICALL
 Java_tracker_star_kcg_startracker_MainActivity_colorBitmapToYuyvBuffer(JNIEnv *env, jobject instance, jobject bit_, jint w, jint h, jbyteArray buffer_)
@@ -117,43 +156,6 @@ Java_tracker_star_kcg_myapplication_MainActivity_findStarsJNI(JNIEnv *env, jobje
     env->ReleaseByteArrayElements(textOut_, (jbyte *) textOut, 0);
 
     return text_index;
-}
-
-int int_compire(const void * a, const void * b)
-{
-    return ( *(int*)a - *(int*)b );
-}
-
-bool checkStar(uchar *ybuffer, int xc, int yc, int w, AlgorithmProps *props, Point *p)
-{
-    int radius = (int)(w*props->percent_of_w_for_r/100.0f + 0.5f);
-    int *buffer = (int *)malloc(sizeof(int)*radius*radius*4 + 128);
-    int max = 0;
-    int index = 0;
-    bool ret = false;
-
-    for(int y = yc - radius; y < yc + radius; ++y)
-    {
-        for (int x = xc - radius; x < xc + radius; ++x)
-        {
-            buffer[index] = ybuffer[y*w + x];
-
-            if(buffer[index] > max)
-            {
-                max = buffer[index];
-                p->x = x;
-                p->y = y;
-            }
-            index++;
-        }
-    }
-
-    qsort(buffer, index, sizeof(int), int_compire);
-//
-    if(buffer[index-1] - buffer[index*props->percnts/100-1] > props->t) ret = true;
-
-    free(buffer);
-    return ret;
 }
 
 #ifdef __cplusplus
