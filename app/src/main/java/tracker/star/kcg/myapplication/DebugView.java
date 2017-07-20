@@ -12,6 +12,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import java.util.concurrent.Semaphore;
+
 /**
  * Created by elazar on 21/06/17.
  */
@@ -24,6 +26,8 @@ public class DebugView extends View
     private Paint p;
     private float RAD_AS_PERCENT_OF_W = 0.02f;
     private long algorithmTime = 0L;
+
+    private Semaphore bitSemaphore = new Semaphore(1);
 
     public DebugView(Context context)
     {
@@ -48,6 +52,15 @@ public class DebugView extends View
 
     public void setBit(Bitmap b)
     {
+        try
+        {
+            bitSemaphore.acquire();
+        }
+        catch (InterruptedException e)
+        {
+            bitSemaphore.release();
+            return;
+        }
         if(bit != null && (bit.getWidth() != b.getWidth() || bit.getHeight() != b.getWidth()))
         {
             bit.recycle();
@@ -63,6 +76,8 @@ public class DebugView extends View
         {
             cbit.drawBitmap(b, 0, 0, null);
         }
+
+        bitSemaphore.release();
     }
 
     public void setAlgorithmTime(long ms)
@@ -78,6 +93,12 @@ public class DebugView extends View
     @Override
     protected void onDraw(Canvas c)
     {
+        try
+        {
+            bitSemaphore.acquire();
+        }
+        catch (InterruptedException e) {bitSemaphore.release();return;}
+
         if(bit != null)
         {
             boolean USE_ROTATE = true;
@@ -137,6 +158,8 @@ public class DebugView extends View
         {
             c.drawText("Bit = null!", c.getWidth()/2 - 50, c.getHeight()/2, p);
         }
+
+        bitSemaphore.release();
     }
 
     public void setStarsList(String starsList)
