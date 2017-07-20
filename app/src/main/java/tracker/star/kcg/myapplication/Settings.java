@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -44,17 +45,30 @@ public class Settings extends BaseActivity
         final TextView isoTV    = (TextView) findViewById(R.id.IsoRangeTV);
         final TextView    exposeTV = (TextView) findViewById(R.id.ExposeRangeTV);
         final Spinner  ResEV    = (Spinner) findViewById(R.id.resolution_spinner);
-
         Properties prop = getProperties();
+        boolean useManualExposure = prop.getProperty(PROPERTY_USE_EXPOSE_ISO, "false").equals("true");
 
         buttonAF.setChecked(prop.getProperty(PROPERTY_FOCUS_KEY, "false").equals("true"));
-        exposeSW.setChecked(prop.getProperty(PROPERTY_USE_EXPOSE_ISO, "false").equals("true"));
+        exposeSW.setChecked(useManualExposure);
+
+        exposeSW.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                isoET.setEnabled(b);
+                exposeET.setEnabled(b);
+            }
+        });
 
         radiusEV.setText(prop.getProperty(PROPERTY_RADIUS_KEY, "0.8"));
         THEV.setText(prop.getProperty(PROPERTY_THRESHHOLD_KEY, "80"));
         PTEV.setText(prop.getProperty(PROPERTY_PERCENT_KEY, "80"));
         isoET.setText(prop.getProperty(PROPERTY_ISO, "1000"));
         exposeET.setText(prop.getProperty(PROPERTY_EXPOSE, "1"));
+
+        isoET.setEnabled(useManualExposure);
+        exposeET.setEnabled(useManualExposure);
 
         try
         {

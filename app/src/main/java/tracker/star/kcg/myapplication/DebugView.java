@@ -22,6 +22,8 @@ public class DebugView extends View
     private Canvas cbit = null;
     private String starsList;
     private Paint p;
+    private float RAD_AS_PERCENT_OF_W = 0.02f;
+    private long algorithmTime = 0L;
 
     public DebugView(Context context)
     {
@@ -42,9 +44,6 @@ public class DebugView extends View
     private void init()
     {
         p = new Paint();
-        p.setStyle(Paint.Style.STROKE);
-        p.setColor(Color.RED);
-        p.setTextSize(64);
     }
 
     public void setBit(Bitmap b)
@@ -66,17 +65,31 @@ public class DebugView extends View
         }
     }
 
+    public void setAlgorithmTime(long ms)
+    {
+        algorithmTime = ms;
+    }
+
+    public void setRadiusAsPercentofWidth(float percent)
+    {
+        RAD_AS_PERCENT_OF_W = percent/100.0f;
+    }
+
     @Override
     protected void onDraw(Canvas c)
     {
         if(bit != null)
         {
             boolean USE_ROTATE = true;
-            int radius = bit.getWidth()/50;
+            int radius = (int) (bit.getWidth()*RAD_AS_PERCENT_OF_W);
 
             if(starsList != null)
             {
                 String starsPosition[] = starsList.split("\n");
+
+                p.setStyle(Paint.Style.STROKE);
+                p.setColor(Color.RED);
+
                 for(String s:starsPosition)
                 {
                     String xy[] = s.split(" ");
@@ -88,7 +101,6 @@ public class DebugView extends View
 
                         cbit.drawCircle(x-radius/4, y-radius/4, radius, p);
                     }
-
                 }
             }
             else cbit.drawText("No Result!", cbit.getWidth()/2 - 50, bit.getHeight()/2, p);
@@ -116,6 +128,10 @@ public class DebugView extends View
                         null
                 );
             }
+
+            p.setColor(Color.BLUE);
+            p.setTextSize(c.getHeight()*0.02f);
+            c.drawText(String.format("Algorithm time take %d ms", algorithmTime), 50, 50, p);
         }
         else
         {

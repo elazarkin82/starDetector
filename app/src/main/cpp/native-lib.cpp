@@ -38,7 +38,7 @@ typedef struct
     float percent_of_w_for_r;//percent of width for search radius
     int percnts;//percents of dark pixels
     int t;//treshhold
-    int *buffer;
+    //int *buffer;
 }AlgorithmProps;
 
 AlgorithmProps props = {0.8f, 80, 50};
@@ -50,44 +50,89 @@ Java_tracker_star_kcg_myapplication_MainActivity_setProperty(JNIEnv *env, jobjec
     props.percnts = percents;
     props.t = threshhold;
 
-    if(!props.buffer) free(props.buffer);
-
-    props.buffer = (int *)malloc(sizeof(int)*1024*1024*4 + 128);
+    //if(!props.buffer) free(props.buffer);
+    //props.buffer = (int *)malloc(sizeof(int)*1024*1024*4 + 128);
 }
 
-inline int int_compire(const void * a, const void * b)
-{
-    return ( *(int*)a - *(int*)b );
-}
+//inline int int_compire(const void * a, const void * b)
+//{
+//    return ( *(int*)a - *(int*)b );
+//}
+
+//inline bool checkStar(uchar *ybuffer, int xc, int yc, int w, AlgorithmProps *props, Point *p)
+//{
+//    int radius = (int)(w*props->percent_of_w_for_r/100.0f + 0.5f);
+//    int max = 0;
+//    int index = 0;
+//    bool ret = false;
+//
+//    for(int y = yc - radius; y < yc + radius; ++y)
+//    {
+//        for (int x = xc - radius; x < xc + radius; ++x)
+//        {
+//            props->buffer[index] = ybuffer[y*w + x];
+//
+//            if(props->buffer[index] > max)
+//            {
+//                max = props->buffer[index];
+//                p->x = x;
+//                p->y = y;
+//            }
+//            index++;
+//        }
+//    }
+//
+//    qsort(props->buffer, index, sizeof(int), int_compire);
+////
+//    if(props->buffer[index-1] - props->buffer[index*props->percnts/100-1] > props->t) ret = true;
+//
+//    return ret;
+//}
 
 inline bool checkStar(uchar *ybuffer, int xc, int yc, int w, AlgorithmProps *props, Point *p)
 {
     int radius = (int)(w*props->percent_of_w_for_r/100.0f + 0.5f);
     int max = 0;
-    int index = 0;
+    int min = 255;
+    int ammount = 0;
     bool ret = false;
+    int histogram[256];
+    int rad2 = radius*radius;
+
+    memset(histogram, 0, sizeof(histogram));
 
     for(int y = yc - radius; y < yc + radius; ++y)
     {
         for (int x = xc - radius; x < xc + radius; ++x)
         {
-            props->buffer[index] = ybuffer[y*w + x];
-
-            if(props->buffer[index] > max)
+            if((x-xc)*(x-xc) + (y-yc)*(y-yc) < rad2)
             {
-                max = props->buffer[index];
-                p->x = x;
-                p->y = y;
+                uchar value = ybuffer[y*w + x];
+                histogram[value]++;
+                if(value > max)
+                {
+                    max = value;
+                    p->x = x;
+                    p->y = y;
+                }
+
+                min = value < min ? value:min;
+                ammount++;
             }
-            index++;
         }
     }
 
-    qsort(props->buffer, index, sizeof(int), int_compire);
-//
-    if(props->buffer[index-1] - props->buffer[index*props->percnts/100-1] > props->t) ret = true;
+    if(max - props->t > min)
+    {
+        int counter = 0;
+        for(int i = min; i < max - props->t; i++)
+        {
+            counter += histogram[i];
+        }
 
-//    free(buffer);
+        if(100.0f*counter/ammount >= props->percnts) ret = true;
+    }
+
     return ret;
 }
 
@@ -128,11 +173,8 @@ Java_tracker_star_kcg_myapplication_MainActivity_findStarsJNI(JNIEnv *env, jobje
 
     AndroidBitmap_lockPixels(env, _debug, (void **) &debug);
 
-//    memset(debug, 0, w*h*sizeof(ARGB));
-
     for(int i = 0; i < w*h; i++)
     {
-//        memset(&debug[i], ybuffer[i], sizeof(ARGB));
         debug[i].r = debug[i].g = debug[i].b = ybuffer[i];
         debug[i].a = 255;
     }

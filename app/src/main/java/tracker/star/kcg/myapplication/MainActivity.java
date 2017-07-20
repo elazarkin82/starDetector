@@ -86,6 +86,9 @@ public class MainActivity extends BaseActivity
                 @Override
                 public void onFrame(byte[] frame, int w, int h)
                 {
+                    int text_size = 0;
+                    long t0 = 0L;
+
                     if(workBitmap == null || workBitmap.getWidth() != w || workBitmap.getHeight() != h)
                     {
                         if(workBitmap != null) workBitmap.recycle();
@@ -94,12 +97,13 @@ public class MainActivity extends BaseActivity
 
                     }
 
-                    int text_size = findStarsJNI(frame, w, h, textOut, workBitmap);
+                    t0 = System.currentTimeMillis();
 
-                    Log.d("elazarkin", "onFrame");
+                    text_size = findStarsJNI(frame, w, h, textOut, workBitmap);
 
                     debugView.setBit(workBitmap);
                     debugView.setStarsList(new String(textOut, 0, text_size));
+                    debugView.setAlgorithmTime(System.currentTimeMillis() - t0);
 
                     runOnUiThread(new Runnable()
                     {
@@ -119,12 +123,16 @@ public class MainActivity extends BaseActivity
     {
         super.onResume();
 
+        float radiusAsPercentOfW = Float.parseFloat(getProperties().getProperty(PROPERTY_RADIUS_KEY, "0.8"));
+
         setProperty
         (
-            Float.parseFloat(getProperties().getProperty(PROPERTY_RADIUS_KEY, "0.8")),
+            radiusAsPercentOfW,
             Integer.parseInt(getProperties().getProperty(PROPERTY_PERCENT_KEY, "80")),
             Integer.parseInt(getProperties().getProperty(PROPERTY_THRESHHOLD_KEY, "50"))
         );
+
+        debugView.setRadiusAsPercentofWidth(radiusAsPercentOfW);
     }
 
     private native int findStarsJNI(byte[] ybuffer, int w, int h, byte[] textOut, Bitmap debug);

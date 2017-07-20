@@ -709,8 +709,8 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
                                 if (parent != null)
                                 {
                                     String useAutoFocus = parent.getProperties().getProperty(BaseActivity.PROPERTY_FOCUS_KEY);
-                                    String useExpose = parent.getProperties().getProperty(BaseActivity.PROPERTY_USE_EXPOSE_ISO);
-                                    if (useExpose != null && useExpose.equals("true"))
+                                    String useManualExpose = parent.getProperties().getProperty(BaseActivity.PROPERTY_USE_EXPOSE_ISO);
+                                    if (useManualExpose != null && useManualExpose.equals("true"))
                                     {
                                         String isoValueTxt   = parent.getProperties().getProperty(BaseActivity.PROPERTY_ISO);
                                         String exposureMsTxt = parent.getProperties().getProperty(BaseActivity.PROPERTY_EXPOSE);
